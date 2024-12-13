@@ -53,6 +53,7 @@ function App() {
   }, [backupFileJSON])
 
   const inputRef = useRef<HTMLInputElement>(null)
+  const textRef = useRef<HTMLInputElement>(null)
 
   const deepParseJSON = (data: any): any => {
     if (typeof data === 'string') {
@@ -73,6 +74,17 @@ function App() {
 
   const handlerBrowse = (): void => {
     if (inputRef && inputRef.current) inputRef.current.click()
+  }
+  const handleInput = (): void => {
+    if (inputRef && textRef.current) {
+      const value = textRef.current.value
+      try {
+        const backupFile = JSON.parse(value)
+        setBackupFileJSON(deepParseJSON(backupFile))
+      } catch (err) {
+        console.log(err)
+      }
+    }
   }
 
   const handlerFileChange = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
@@ -166,80 +178,96 @@ function App() {
       <h2>
         Select the a backup file to be decrypted
       </h2>
-      <div className="body">
-        {filename===''}
-        <input
-          type="file"
-          name="file"
-          ref={inputRef}
-          style={{ display: 'none' }}
-          required
-          onChange={handlerFileChange}
-        />
-        <div className="fileSelection">
-          Select File <button onClick={handlerBrowse}> {filename==='' ? 'Browse Files' : filename} </button>
-        </div>
 
-        {!!keyStores.length &&
-            <form onSubmit={handleSubmit}>
-                <div className="password">
-                  {useRecoveryCode ?(<div>
-                      Recovery Code <input
-                      placeholder='  recovery code'
-                      onChange={e => setRecoveryCode(e.target.value)}
-                      type="text" title="recoveryCode"
-                      name="recoveryCode"
-                      value={recoveryCode}
-                    />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setUseRecoveryCode(false)}
-                        }
-                      > Switch to password</button>
-                    </div>
-                  ):(<div>
-                    Password <input
-                    placeholder='  password'
-                    onChange={e => setPassword(e.target.value)}
-                    type="password" title="password"
-                    name="password" value={password}
-                  />
-                    {masterKeyStore && <button
-                        type="button"
-                        onClick={() => {
-                          setUseRecoveryCode(true)
-                        }}
-                    >
-                        Switch to Recovery Code
-                    </button>
+      <div className={'body'}>
+      {!keyStores.length ? (
+        <div>
+          {filename === ''}
+          <input
+            type="file"
+            name="file"
+            ref={inputRef}
+            style={{display: 'none'}}
+            required
+            onChange={handlerFileChange}
+          />
+          <div className="fileSelection">
+            Select File <button onClick={handlerBrowse}> {filename === '' ? 'Browse Files' : filename} </button>
+          </div>
+          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200}}>
+            Or...
+          </div>
+          <div className="fileSelection">
+            Input data <input placeholder={'xdefi/ctrl data...'} ref={textRef}></input>
+            <button onClick={handleInput}> {'Sumbit'} </button>
+          </div>
+        </div>
+          )
+          :
+          (
+          <form onSubmit={handleSubmit}>
+            <div className="password">
+              {useRecoveryCode ? (<div>
+                  Recovery Code <input
+                  placeholder='  recovery code'
+                  onChange={e => setRecoveryCode(e.target.value)}
+                  type="text" title="recoveryCode"
+                  name="recoveryCode"
+                  value={recoveryCode}
+                />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUseRecoveryCode(false)
                     }
-                  </div>)
-                  }
+                    }
+                  > Switch to password
+                  </button>
                 </div>
-                <button type="submit">Get Seed Phrase</button>
-            </form>
-        }
-        <div className="accounts">
-          {seedPhrases.map((seedPhrase: any) => {
-            return (
-              <div className="account" key={seedPhrase.label}>
-                {seedPhrase.label}: {seedPhrase.phrases}
-                <img
-                  src={CopyIcon}
-                  onClick={() => {
-                    navigator.clipboard.writeText(seedPhrase.phrases)
-                      .then(() => alert('Copied seed phrase'))}
-                  }
-                  alt={'copy'}/>
-              </div>
-            )
-          })}
-        </div>
-        {error !=='' && <div className="error"> {error} </div> }
+              ) : (<div>
+                Password <input
+                placeholder='  password'
+                onChange={e => setPassword(e.target.value)}
+                type="password" title="password"
+                name="password" value={password}
+              />
+                {masterKeyStore && <button
+                    type="button"
+                    onClick={() => {
+                      setUseRecoveryCode(true)
+                    }}
+                >
+                    Switch to Recovery Code
+                </button>
+                }
+              </div>)
+              }
+            </div>
+            <button type="submit">Get Seed Phrase</button>
+          </form>
+          )
+          }
+          <div className="accounts">
+            {seedPhrases.map((seedPhrase: any) => {
+              return (
+                <div className="account" key={seedPhrase.label}>
+                  {seedPhrase.label}: {seedPhrase.phrases}
+                  <img
+                    src={CopyIcon}
+                    onClick={() => {
+                      navigator.clipboard.writeText(seedPhrase.phrases)
+                        .then(() => alert('Copied seed phrase'))
+                    }
+                    }
+                    alt={'copy'}/>
+                </div>
+              )
+            })}
+          </div>
+          {error !== '' && <div className="error"> {error} </div>}
       </div>
-    </div>
-  );
-}
+        </div>
+      );
+      }
 
-export default App;
+      export default App;
