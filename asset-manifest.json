@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/backup-decryptor/static/css/main.2c90f1c0.css",
+    "main.js": "/backup-decryptor/static/js/main.3f04b62c.js",
+    "static/media/copy.svg": "/backup-decryptor/static/media/copy.c0a32f3c4b87aa6536ebfb98b3d44916.svg",
+    "index.html": "/backup-decryptor/index.html",
+    "main.2c90f1c0.css.map": "/backup-decryptor/static/css/main.2c90f1c0.css.map",
+    "main.3f04b62c.js.map": "/backup-decryptor/static/js/main.3f04b62c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2c90f1c0.css",
+    "static/js/main.3f04b62c.js"
+  ]
+}
