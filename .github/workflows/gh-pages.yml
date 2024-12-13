@@ -30,6 +30,9 @@ jobs:
       - name: Build project
         run: |
           NODE_OPTIONS=--openssl-legacy-provider yarn build
+      # Step 4: Build the project
+      - name: show the build
+        run: ls build
 
       # Step 5: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages

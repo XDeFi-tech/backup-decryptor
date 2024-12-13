@@ -161,7 +161,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        XDEFI Backup Decryptor
+        CTRL Backup Decryptor
       </header>
       <h2>
         Select the a backup file to be decrypted
