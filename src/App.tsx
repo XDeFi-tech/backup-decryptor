@@ -176,7 +176,7 @@ function App() {
         CTRL Backup Decryptor
       </header>
       <h2>
-        Select the a backup file to be decrypted
+        Please Select your backup file
       </h2>
 
       <div className={'body'}>
@@ -199,7 +199,7 @@ function App() {
           </div>
           <div className="fileSelection">
             Input data <input placeholder={'xdefi/ctrl data...'} ref={textRef}></input>
-            <button onClick={handleInput}> {'Sumbit'} </button>
+            <button onClick={handleInput}> {'Submit'} </button>
           </div>
         </div>
           )
