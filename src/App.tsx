@@ -54,6 +54,23 @@ function App() {
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const deepParseJSON = (data: any): any => {
+    if (typeof data === 'string') {
+      try {
+        return deepParseJSON(JSON.parse(data)); // Parse the string and recurse
+      } catch {
+        return data; // Return the original string if parsing fails
+      }
+    } else if (Array.isArray(data)) {
+      return data.map(deepParseJSON); // Recursively parse array elements
+    } else if (typeof data === 'object' && data !== null) {
+      return Object.fromEntries(
+        Object.entries(data).map(([key, value]) => [key, deepParseJSON(value)])
+      ); // Recursively parse object properties
+    }
+    return data; // Return the value if it's neither a string, array, nor object
+  }
+
   const handlerBrowse = (): void => {
     if (inputRef && inputRef.current) inputRef.current.click()
   }
@@ -78,7 +95,7 @@ function App() {
         if (!e.target || !e.target.result) return
         try {
           const backupFile = JSON.parse(e.target.result.toString())
-          setBackupFileJSON(backupFile)
+          setBackupFileJSON(deepParseJSON(backupFile))
         } catch (err) {
           console.log(err)
         }
@@ -93,11 +110,11 @@ function App() {
         })
       })
     ).then((promises: PromiseSettledResult<Phrase>[]) => {
-        // @ts-ignore
+      // @ts-ignore
       const successfullPromises = promises.filter(promise => promise.status === 'fulfilled').map((promise: PromiseFulfilledResult<Phrase>) => promise.value)
-        setSeedPhrases(successfullPromises)
-        setError("")
-      })
+      setSeedPhrases(successfullPromises)
+      setError("")
+    })
       .catch(e => {
         console.error(e)
         setSeedPhrases([])
@@ -111,9 +128,9 @@ function App() {
       WalletDecryptor.fromPassword(password, keyStores[0]).then(walletDecryptor =>{
         return [{ label: keyStores[0].label, phrases: walletDecryptor.getMasterSeedPhrase() }]
       }).then(phrases => {
-          setSeedPhrases(phrases)
-          setError("")
-        })
+        setSeedPhrases(phrases)
+        setError("")
+      })
         .catch(e => {
           console.error(e)
           setSeedPhrases([])
@@ -128,7 +145,7 @@ function App() {
             console.error(e)
             setSeedPhrases([])
             setError(e)
-        })
+          })
       } else
         WalletDecryptor.fromPassword(password, masterKeyStore)
           .then(getSeedPhraseFromWallet)
@@ -136,7 +153,7 @@ function App() {
             console.error(e)
             setSeedPhrases([])
             setError(e)
-        })
+          })
     }
 
   }
@@ -164,44 +181,44 @@ function App() {
         </div>
 
         {!!keyStores.length &&
-          <form onSubmit={handleSubmit}>
-            <div className="password">
-              {useRecoveryCode ?(<div>
-                  Recovery Code <input
-                  placeholder='  recovery code'
-                  onChange={e => setRecoveryCode(e.target.value)}
-                  type="text" title="recoveryCode"
-                  name="recoveryCode"
-                  value={recoveryCode}
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUseRecoveryCode(false)}
+            <form onSubmit={handleSubmit}>
+                <div className="password">
+                  {useRecoveryCode ?(<div>
+                      Recovery Code <input
+                      placeholder='  recovery code'
+                      onChange={e => setRecoveryCode(e.target.value)}
+                      type="text" title="recoveryCode"
+                      name="recoveryCode"
+                      value={recoveryCode}
+                    />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUseRecoveryCode(false)}
+                        }
+                      > Switch to password</button>
+                    </div>
+                  ):(<div>
+                    Password <input
+                    placeholder='  password'
+                    onChange={e => setPassword(e.target.value)}
+                    type="password" title="password"
+                    name="password" value={password}
+                  />
+                    {masterKeyStore && <button
+                        type="button"
+                        onClick={() => {
+                          setUseRecoveryCode(true)
+                        }}
+                    >
+                        Switch to Recovery Code
+                    </button>
+                    }
+                  </div>)
                   }
-                > Switch to password</button>
                 </div>
-              ):(<div>
-                Password <input
-                placeholder='  password'
-                onChange={e => setPassword(e.target.value)}
-                type="password" title="password"
-                name="password" value={password}
-              />
-                {masterKeyStore && <button
-                    type="button"
-                    onClick={() => {
-                      setUseRecoveryCode(true)
-                    }}
-                >
-                    Switch to Recovery Code
-                </button>
-                }
-              </div>)
-              }
-            </div>
-            <button type="submit">Get Seed Phrase</button>
-          </form>
+                <button type="submit">Get Seed Phrase</button>
+            </form>
         }
         <div className="accounts">
           {seedPhrases.map((seedPhrase: any) => {
