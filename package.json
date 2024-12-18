@@ -7,7 +7,7 @@
     "@types/node": "12.0.0",
     "@types/react": "17.0.0",
     "@types/react-dom": "17.0.0",
-    "@xchainjs/xchain-crypto": "0.2.3",
+    "@xchainjs/xchain-crypto": "0.3.6",
     "bip39": "3.0.3",
     "crypto-browserify": "^3.12.1",
     "crypto-js": "4.2.0",
